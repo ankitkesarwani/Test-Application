@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Long firstTimeStampLong = System.currentTimeMillis()/1000;
                     String timeStampFirst = getDateCurrentTimeZone(firstTimeStampLong);
                     mStart.setText(timeStampFirst);
-                    new DownloadFiles(MainActivity.this, mFirstUrl, Utils.firstURL, mEnd);
+                    new DownloadFiles(MainActivity.this, mFirstUrl, Utils.firstURL, mEnd, mStartSave, mEndSave);
 
                 } else {
 
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Long secondTimeStampLong = System.currentTimeMillis()/1000;
                     String timeStampSecond = getDateCurrentTimeZone(secondTimeStampLong);
                     mStartSecond.setText(timeStampSecond);
-                    new DownloadFiles(MainActivity.this, mSecondUrl, Utils.secondURL, mEndSecond);
+                    new DownloadFiles(MainActivity.this, mSecondUrl, Utils.secondURL, mEndSecond, mStartSaveSecond, mEndSaveSecond);
 
                 } else {
 
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Long thirdTimeStampLong = System.currentTimeMillis()/1000;
                     String timeStampThird = getDateCurrentTimeZone(thirdTimeStampLong);
                     mStartThird.setText(timeStampThird);
-                    new DownloadFiles(MainActivity.this, mThirdUrl, Utils.thirdURL, mEndThird);
+                    new DownloadFiles(MainActivity.this, mThirdUrl, Utils.thirdURL, mEndThird, mStartSaveThird, mEndSaveThird);
 
                 } else {
 
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Long fourthTimeStampLong = System.currentTimeMillis()/1000;
                     String timeStampFourth = getDateCurrentTimeZone(fourthTimeStampLong);
                     mStartFourth.setText(timeStampFourth);
-                    new DownloadFiles(MainActivity.this, mFourthUrl, Utils.fourthURL, mEndFourth);
+                    new DownloadFiles(MainActivity.this, mFourthUrl, Utils.fourthURL, mEndFourth, mStartSaveFourth, mEndSaveFourth);
 
                 } else {
 

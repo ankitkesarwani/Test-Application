@@ -9,6 +9,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -17,6 +27,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -29,15 +41,21 @@ public class DownloadFiles {
     private Context context;
     private Button buttonText;
     private TextView mEnd;
+    private TextView mStartSave;
+    private TextView mEndSave;
     private String downloadUrl = "";
     private String downloadFileName = "";
 
-    public DownloadFiles(Context context, Button buttonText, String downloadUrl, TextView mEnd) {
+    private String uploadUrl = "http://10.0.2.2/TestApp/updateinfo.php";
+
+    public DownloadFiles(Context context, Button buttonText, String downloadUrl, TextView mEnd, TextView mStartSave, TextView mEndSave) {
 
         this.context = context;
         this.buttonText = buttonText;
         this.downloadUrl = downloadUrl;
         this.mEnd = mEnd;
+        this.mStartSave = mStartSave;
+        this.mEndSave = mEndSave;
 
         downloadFileName = downloadUrl.replace(Utils.mainUrl, "");
         Log.e(TAG, downloadFileName);
@@ -73,6 +91,8 @@ public class DownloadFiles {
                     Long secondTimeStampLong = System.currentTimeMillis()/1000;
                     String timeStampSecond = getDateCurrentTimeZone(secondTimeStampLong);
                     mEnd.setText(timeStampSecond);
+
+                    uploadFile();
 
                 } else {
 
@@ -112,25 +132,6 @@ public class DownloadFiles {
             }
 
             super.onPostExecute(aVoid);
-
-        }
-
-        public String getDateCurrentTimeZone(long timestamp) {
-
-            try{
-
-                Calendar calendar = Calendar.getInstance();
-                TimeZone timeZone = TimeZone.getDefault();
-                calendar.setTimeInMillis(timestamp * 1000);
-                calendar.add(Calendar.MILLISECOND, timeZone.getOffset(calendar.getTimeInMillis()));
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date currenTimeZone = (Date) calendar.getTime();
-                return sdf.format(currenTimeZone);
-
-            }catch (Exception e) {
-
-            }
-            return "";
 
         }
 
@@ -201,6 +202,73 @@ public class DownloadFiles {
             }
 
             return null;
+        }
+
+        private void uploadFile() {
+
+            Long secondTimeStampLong = System.currentTimeMillis()/1000;
+            String timeStartStampSecond = getDateCurrentTimeZone(secondTimeStampLong);
+            mStartSave.setText(timeStartStampSecond);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, uploadUrl, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        String Response = jsonObject.getString("response");
+
+                        Long endTimeStampLong = System.currentTimeMillis()/1000;
+                        String timeStampSecond = getDateCurrentTimeZone(endTimeStampLong);
+                        mEndSave.setText(timeStampSecond);
+
+                        Toast.makeText(context, Response, Toast.LENGTH_LONG).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                }
+            }) {
+
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+
+                    Map<String, String> params = new HashMap<>();
+                    params.put("name", downloadFileName.trim());
+                    params.put("file", String.valueOf(outputFile));
+
+                    return params;
+                }
+            };
+
+            MySingleton.getInstance(context).addToRequestQue(stringRequest);
+            Long endTimeStampLong = System.currentTimeMillis()/1000;
+            String timeStampSecond = getDateCurrentTimeZone(endTimeStampLong);
+            mEndSave.setText(timeStampSecond);
+
+        }
+
+        public String getDateCurrentTimeZone(long timestamp) {
+
+            try{
+
+                Calendar calendar = Calendar.getInstance();
+                TimeZone timeZone = TimeZone.getDefault();
+                calendar.setTimeInMillis(timestamp * 1000);
+                calendar.add(Calendar.MILLISECOND, timeZone.getOffset(calendar.getTimeInMillis()));
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date currenTimeZone = (Date) calendar.getTime();
+                return sdf.format(currenTimeZone);
+
+            }catch (Exception e) {
+
+            }
+            return "";
+
         }
     }
 }
