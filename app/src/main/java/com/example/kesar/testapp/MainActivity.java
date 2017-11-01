@@ -1,16 +1,31 @@
 package com.example.kesar.testapp;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,11 +40,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mThirdUrl;
     private Button mFourthUrl;
 
+    private Button mCurrentTimeStamp;
+
     private TextView mStart, mStartSecond, mStartThird, mStartFourth;
     private TextView mEnd, mEndSecond, mEndThird, mEndFourth;
     private TextView mStartSave, mStartSaveSecond, mStartSaveThird ,mStartSaveFourth;
     private TextView mEndSave, mEndSaveSecond, mEndSaveThird ,mEndSaveFourth;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSecondUrl = (Button) findViewById(R.id.main_second_url);
         mThirdUrl = (Button) findViewById(R.id.main_third_url);
         mFourthUrl = (Button) findViewById(R.id.main_fourth_url);
+
+        mCurrentTimeStamp = (Button) findViewById(R.id.main_current_timestamp);
 
         mStart = (TextView) findViewById(R.id.card_start);
         mEnd = (TextView) findViewById(R.id.card_end);
@@ -68,6 +86,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setListeners();
 
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something after 5s
+                startDownload();
+
+            }
+        }, 5000);
+
+    }
+
+    private void startDownload() {
+
+        Long firstTimeStampLong = System.currentTimeMillis()/1000;
+        String timeStampFirst = getDateCurrentTimeZone(firstTimeStampLong);
+        mStart.setText(timeStampFirst);
+        new InstantDownloadingFiles(MainActivity.this, Utils.firstURL, mEnd, mStartSave, mEndSave);
+
+        Long secondTimeStampLong = System.currentTimeMillis()/1000;
+        String timeStampSecond = getDateCurrentTimeZone(secondTimeStampLong);
+        mStartSecond.setText(timeStampSecond);
+        new InstantDownloadingFiles(MainActivity.this, Utils.secondURL, mEndSecond, mStartSaveSecond, mEndSaveSecond);
+
+        Long thirdTimeStampLong = System.currentTimeMillis()/1000;
+        String timeStampThird = getDateCurrentTimeZone(thirdTimeStampLong);
+        mStartThird.setText(timeStampThird);
+        new InstantDownloadingFiles(MainActivity.this, Utils.thirdURL, mEndThird, mStartSaveThird, mEndSaveThird);
+
+        Long fourthTimeStampLong = System.currentTimeMillis()/1000;
+        String timeStampFourth = getDateCurrentTimeZone(fourthTimeStampLong);
+        mStartFourth.setText(timeStampFourth);
+        new InstantDownloadingFiles(MainActivity.this, Utils.fourthURL, mEndFourth, mStartSaveFourth, mEndSaveFourth);
+
     }
 
     private void setListeners() {
@@ -76,6 +128,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSecondUrl.setOnClickListener(this);
         mThirdUrl.setOnClickListener(this);
         mFourthUrl.setOnClickListener(this);
+
+        mCurrentTimeStamp.setOnClickListener(this);
 
     }
 
@@ -140,6 +194,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 }
                 break;
+            case R.id.main_current_timestamp:
+
+                Long currentTimeStamp = System.currentTimeMillis()/1000;
+                String timeStamp = getDateCurrentTimeZone(currentTimeStamp);
+
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setTitle("Current TimeStamp");
+                alertDialog.setMessage(timeStamp);
+                alertDialog.show();
 
         }
 
@@ -170,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             TimeZone timeZone = TimeZone.getDefault();
             calendar.setTimeInMillis(timestamp * 1000);
             calendar.add(Calendar.MILLISECOND, timeZone.getOffset(calendar.getTimeInMillis()));
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             Date currenTimeZone = (Date) calendar.getTime();
             return sdf.format(currenTimeZone);
 
@@ -180,5 +243,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return "";
 
     }
-
 }

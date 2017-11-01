@@ -92,7 +92,15 @@ public class DownloadFiles {
                     String timeStampSecond = getDateCurrentTimeZone(secondTimeStampLong);
                     mEnd.setText(timeStampSecond);
 
-                    uploadFile();
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            uploadFile();
+
+                        }
+                    }, 1564);
 
                 } else {
 
@@ -218,9 +226,17 @@ public class DownloadFiles {
                         JSONObject jsonObject = new JSONObject(response);
                         String Response = jsonObject.getString("response");
 
-                        Long endTimeStampLong = System.currentTimeMillis()/1000;
-                        String timeStampSecond = getDateCurrentTimeZone(endTimeStampLong);
-                        mEndSave.setText(timeStampSecond);
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                Long endTimeStampLong = System.currentTimeMillis()/1000;
+                                String timeStampSecond = getDateCurrentTimeZone(endTimeStampLong);
+                                mEndSave.setText(timeStampSecond);
+
+                            }
+                        }, 1459);
 
                         Toast.makeText(context, Response, Toast.LENGTH_LONG).show();
                     } catch (JSONException e) {
@@ -246,10 +262,17 @@ public class DownloadFiles {
             };
 
             MySingleton.getInstance(context).addToRequestQue(stringRequest);
-            Long endTimeStampLong = System.currentTimeMillis()/1000;
-            String timeStampSecond = getDateCurrentTimeZone(endTimeStampLong);
-            mEndSave.setText(timeStampSecond);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
 
+                    Long endTimeStampLong = System.currentTimeMillis()/1000;
+                    String timeStampSecond = getDateCurrentTimeZone(endTimeStampLong);
+                    mEndSave.setText(timeStampSecond);
+
+                }
+            }, 1892);
         }
 
         public String getDateCurrentTimeZone(long timestamp) {
@@ -260,7 +283,7 @@ public class DownloadFiles {
                 TimeZone timeZone = TimeZone.getDefault();
                 calendar.setTimeInMillis(timestamp * 1000);
                 calendar.add(Calendar.MILLISECOND, timeZone.getOffset(calendar.getTimeInMillis()));
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 Date currenTimeZone = (Date) calendar.getTime();
                 return sdf.format(currenTimeZone);
 
